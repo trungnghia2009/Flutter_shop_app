@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/product.dart';
-import '../providers/products.dart';
+import '../providers/cart.dart';
+import 'badge2.dart';
 
 class ProductItem extends StatelessWidget {
   @override
@@ -10,6 +11,7 @@ class ProductItem extends StatelessWidget {
     print('ProductItem() rebuil');
     // TODO: not change except for widgets that were wrapped by Consumer<>
     final productData = Provider.of<Product>(context, listen: false);
+    final cartData = Provider.of<Cart>(context, listen: false);
     // TODO: ClipRRect forces the child widget it wraps into a certain shape
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
@@ -34,21 +36,25 @@ class ProductItem extends StatelessWidget {
                   ? Icons.favorite
                   : Icons.favorite_border),
               onPressed: () {
-                print('IconButton() rebuil');
+                print('Favorite rebuil');
                 productData.toggleFavoriteStatus();
               },
               color: Theme.of(context).accentColor,
             ),
           ),
-
           title: Text(
             productData.title,
             textAlign: TextAlign.center,
           ),
-          trailing: IconButton(
-            icon: Icon(Icons.add_shopping_cart),
-            onPressed: () {},
-            color: Theme.of(context).accentColor,
+          trailing: GestureDetector(
+            child: Badge2(
+              cartData: cartData,
+              productId: productData.id,
+            ),
+            onTap: () {
+              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                  arguments: productData.id);
+            },
           ),
           backgroundColor: Colors.black54,
         ),

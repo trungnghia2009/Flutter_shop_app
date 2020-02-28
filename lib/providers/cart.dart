@@ -13,13 +13,54 @@ class CartItem {
   });
 }
 
-class Cart {
-  Map<String, CartItem> _items;
+class Cart with ChangeNotifier {
+  Map<String, CartItem> _items = {};
   Map<String, CartItem> get items {
-    return {...items};
+    return {..._items};
+  }
+
+  int get itemCount {
+    int totalItemsInCart = 0;
+    _items.forEach((_, item) => totalItemsInCart += item.quality);
+    return totalItemsInCart;
+  }
+
+  int getItemCountById(String productId) {
+    return _items.containsKey(productId) ? _items[productId].quality : 0;
+  }
+
+  double get totalAmount {
+    double total = 0.0;
+    _items.forEach((_, item) => total += item.quality * item.price);
+    return total;
+  }
+
+  bool checkQuality(String productId) {
+    bool isQuality = false;
+    if (_items.containsKey(productId)) {
+      isQuality = true;
+    }
+    return isQuality;
+  }
+
+  void removeItemById(String productId) {
+    if (_items.containsKey(productId) && _items[productId].quality != 0) {
+      _items.update(
+          productId,
+          (existingCartItem) => CartItem(
+                id: existingCartItem.id,
+                title: existingCartItem.title,
+                quality: existingCartItem.quality - 1,
+                price: existingCartItem.price,
+              ));
+    }
+    if (_items.containsKey(productId) && _items[productId].quality == 0)
+      _items.remove(productId);
+    notifyListeners();
   }
 
   void addItem(String productId, double price, String title) {
+    // TODO: containsKey cannot be called on null, must initialize _items as empty
     if (_items.containsKey(productId)) {
       _items.update(
         productId,
@@ -40,5 +81,23 @@ class Cart {
                 quality: 1,
               ));
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clearCart() {
+    _items = {};
+    notifyListeners();
+  }
+
+  var isFavorite = false;
+
+  void toggleFavorite() {
+    isFavorite = !isFavorite;
+    notifyListeners();
   }
 }

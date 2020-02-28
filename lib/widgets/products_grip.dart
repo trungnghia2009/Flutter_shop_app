@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../widgets/product_item.dart';
 import '../providers/products.dart';
 import 'package:provider/provider.dart';
-import '../providers/product.dart';
 
 class ProductsGrip extends StatelessWidget {
   final bool showFav;

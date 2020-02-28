@@ -1,4 +1,3 @@
-import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'product.dart';
 
@@ -53,5 +52,16 @@ class Products with ChangeNotifier {
   void addItem() {
     // TODO: when notifyListeners() is called all widgets that use provider will rebuild
     notifyListeners();
+  }
+
+  void toggleFavoriteById(String id) {
+    Product product = _items.firstWhere((item) => item.id == id);
+    product.isFavorite = !product.isFavorite;
+    notifyListeners();
+  }
+
+  bool getFavoriteById(String id) {
+    Product product = _items.firstWhere((item) => item.id == id);
+    return product.isFavorite;
   }
 }
