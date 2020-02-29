@@ -8,6 +8,9 @@ import 'providers/cart.dart';
 import 'providers/orders.dart';
 import 'screens/orders_screen.dart';
 import 'package:flutter/services.dart';
+import 'screens/user_products_screen.dart';
+import 'screens/edit_product_screen.dart';
+import 'screens/add_product_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,6 +41,7 @@ class MyApp extends StatelessWidget {
           canvasColor: Color.fromRGBO(250, 250, 250, 0.9),
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
+          errorColor: Colors.red,
           fontFamily: 'Lato',
         ),
         title: 'Shop now!!',
@@ -47,6 +51,9 @@ class MyApp extends StatelessWidget {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),
+          UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+          EditProductScreen.routeName: (ctx) => EditProductScreen(),
+          AddProductScreen.routeName: (ctx) => AddProductScreen(),
         },
       ),
     );

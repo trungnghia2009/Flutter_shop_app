@@ -37,13 +37,59 @@ class CartScreen extends StatelessWidget {
                   ),
                   FlatButton(
                     onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                          cartData.items.values.toList(), cartData.totalAmount);
                       cartData.totalAmount > 0
-                          ? Navigator.of(context)
-                              .pushNamed(OrdersScreen.routeName)
-                          : null;
-                      cartData.clearCart();
+                          ? showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                // return object of type Dialog
+                                return AlertDialog(
+                                  title: Text("Make an order ?"),
+                                  content:
+                                      Text("This will lead you to order page."),
+                                  actions: <Widget>[
+                                    // usually buttons at the bottom of the dialog
+                                    FlatButton(
+                                      child: Text("No"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: Text("Yes"),
+                                      onPressed: () {
+                                        Provider.of<Orders>(context,
+                                                listen: false)
+                                            .addOrder(
+                                                cartData.items.values.toList(),
+                                                cartData.totalAmount);
+                                        Navigator.of(context)
+                                            .pushReplacementNamed(
+                                                OrdersScreen.routeName);
+                                        cartData.clearCart();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                // return object of type Dialog
+                                return AlertDialog(
+                                  title: new Text("There is no item in cart"),
+                                  actions: <Widget>[
+                                    // usually buttons at the bottom of the dialog
+                                    new FlatButton(
+                                      child: new Text("Close"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                     },
                     child: Text('ORDER NOW'),
                     textColor: Theme.of(context).primaryColor,
@@ -54,19 +100,21 @@ class CartScreen extends StatelessWidget {
           ),
           SizedBox(height: 10),
           // TODO: IF were in column, must define height for ListView
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartData.items.length,
-              itemBuilder: (context, index) => CartItem(
-                // TODO: transform cartData to list
-                id: cartData.items.values.toList()[index].id,
-                title: cartData.items.values.toList()[index].title,
-                price: cartData.items.values.toList()[index].price,
-                quality: cartData.items.values.toList()[index].quality,
-                productID: cartData.items.keys.toList()[index],
-              ),
-            ),
-          )
+          cartData.items.length == 0
+              ? Center(child: Text('There is no item in cart!'))
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: cartData.items.length,
+                    itemBuilder: (context, index) => CartItem(
+                      // TODO: transform cartData to list
+                      id: cartData.items.values.toList()[index].id,
+                      title: cartData.items.values.toList()[index].title,
+                      price: cartData.items.values.toList()[index].price,
+                      quality: cartData.items.values.toList()[index].quality,
+                      productID: cartData.items.keys.toList()[index],
+                    ),
+                  ),
+                )
         ],
       ),
     );

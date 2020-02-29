@@ -84,6 +84,19 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  // TODO: update price
+  void updatePrice(String productId, double newPrice) {
+    _items.update(
+      productId,
+      (existingCartItem) => CartItem(
+        id: existingCartItem.id,
+        title: existingCartItem.title,
+        price: newPrice,
+        quality: existingCartItem.quality,
+      ),
+    );
+  }
+
   void removeItem(String productId) {
     _items.remove(productId);
     notifyListeners();

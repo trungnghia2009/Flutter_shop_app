@@ -11,7 +11,7 @@ class ProductItem extends StatelessWidget {
     print('ProductItem() rebuil');
     // TODO: not change except for widgets that were wrapped by Consumer<>
     final productData = Provider.of<Product>(context, listen: false);
-    final cartData = Provider.of<Cart>(context, listen: false);
+    final cartData = Provider.of<Cart>(context);
     // TODO: ClipRRect forces the child widget it wraps into a certain shape
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
@@ -52,8 +52,26 @@ class ProductItem extends StatelessWidget {
               productId: productData.id,
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                  arguments: productData.id);
+              cartData.addItem(
+                productData.id,
+                productData.price,
+                productData.title,
+              );
+              // TODO: Establish the connection to the nearest Scaffold, the nearest app layout
+              // TODO: This have all properties and methods that belong to nearest Scaffold
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added ${productData.title} to cart'),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cartData.removeItemById(productData.id);
+                    },
+                  ),
+                ),
+              );
             },
           ),
           backgroundColor: Colors.black54,

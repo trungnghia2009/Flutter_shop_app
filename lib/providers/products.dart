@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'product.dart';
+import 'cart.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -49,8 +50,20 @@ class Products with ChangeNotifier {
     return _items.firstWhere((item) => item.id == id);
   }
 
-  void addItem() {
-    // TODO: when notifyListeners() is called all widgets that use provider will rebuild
+  void addItem(Product product) {
+    _items.insert(0, product); // add to the beginning
+//    _items.add(product); // add to the end
+  }
+
+  void updateItem(int index, Product product) {
+    _items.removeAt(index);
+    _items.insert(index, product);
+    // TODO: need to sync new price to cartData after updating item
+    notifyListeners();
+  }
+
+  void removeItem(int productIndex) {
+    _items.removeAt(productIndex);
     notifyListeners();
   }
 

@@ -38,7 +38,7 @@ class ProductDetailScreen extends StatelessWidget {
           ),
           SizedBox(
             width: 30,
-          )
+          ),
         ],
       ),
       body: Column(
