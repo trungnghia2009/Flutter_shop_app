@@ -31,4 +31,9 @@ class Orders with ChangeNotifier {
             dateTime: DateTime.now(),
           ));
   }
+
+  void removeOrder(String orderId) {
+    final removeOrder = _orders.firstWhere((order) => order.id == orderId);
+    _orders.remove(removeOrder);
+  }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
-import 'orders_screen.dart';
 import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
@@ -62,9 +61,10 @@ class CartScreen extends StatelessWidget {
                                             .addOrder(
                                                 cartData.items.values.toList(),
                                                 cartData.totalAmount);
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                OrdersScreen.routeName);
+                                        Navigator.of(context).pop();
+//                                        Navigator.of(context)
+//                                            .pushReplacementNamed(
+//                                                OrdersScreen.routeName);
                                         cartData.clearCart();
                                       },
                                     ),

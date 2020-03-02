@@ -4,14 +4,18 @@ import '../providers/product.dart';
 import '../providers/products.dart';
 import '../screens/edit_product_screen.dart';
 import '../screens/product_detail_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class UserProductItem extends StatelessWidget {
   final int productIndex;
-  UserProductItem({@required this.productIndex});
+  final Product product;
+  UserProductItem({@required this.productIndex, @required this.product});
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Product>(context);
     final productsData = Provider.of<Products>(context);
+    final snackBar = Scaffold.of(context);
+
     return Card(
       elevation: 5,
       child: ListTile(
@@ -47,9 +51,19 @@ class UserProductItem extends StatelessWidget {
                             ),
                             FlatButton(
                               child: Text("Yes"),
-                              onPressed: () {
-                                productsData.removeItem(productIndex);
+                              onPressed: () async {
                                 Navigator.of(context).pop();
+                                try {
+                                  await productsData.removeProduct(product);
+                                  snackBar.showSnackBar(SnackBar(
+                                      content: Text('Delete succeeded')));
+                                } catch (error) {
+                                  snackBar.showSnackBar(
+                                    SnackBar(
+                                      content: Text('Delete failed'),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ],
@@ -63,7 +77,7 @@ class UserProductItem extends StatelessWidget {
         leading: GestureDetector(
           onTap: () {
             Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                arguments: productData.id);
+                arguments: productData);
           },
           child: CircleAvatar(
             backgroundImage: NetworkImage(productData.imageUrl),

@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Product with ChangeNotifier {
   final String id;
@@ -16,8 +19,42 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() {
-    isFavorite = !isFavorite;
+  ScaffoldFeatureController snackBarError(BuildContext context) {
+    Scaffold.of(context).hideCurrentSnackBar();
+    return Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Could not add favorite'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void convertFavorite(Product product) {
+    product.isFavorite = !product.isFavorite;
     notifyListeners();
+  }
+
+  // TODO: standard for favorite
+  Future<void> toggleFavoriteStatus(
+      Product product, BuildContext context) async {
+    convertFavorite(product);
+    final url =
+        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json';
+
+    try {
+      final respond = await http.patch(url,
+          body: json.encode({
+            'isFavorite': isFavorite,
+          }));
+      if (respond.statusCode >= 400) {
+        print('status code');
+        convertFavorite(product);
+        snackBarError(context);
+      }
+    } catch (error) {
+      print('catch error');
+      product.isFavorite = !product.isFavorite;
+      convertFavorite(product);
+    }
   }
 }

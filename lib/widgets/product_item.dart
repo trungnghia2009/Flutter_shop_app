@@ -8,6 +8,7 @@ import 'badge2.dart';
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final snackBar = Scaffold.of(context);
     print('ProductItem() rebuil');
     // TODO: not change except for widgets that were wrapped by Consumer<>
     final productData = Provider.of<Product>(context, listen: false);
@@ -19,7 +20,7 @@ class ProductItem extends StatelessWidget {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                arguments: productData.id);
+                arguments: productData);
           },
           child: Image.network(
             productData.imageUrl,
@@ -35,9 +36,9 @@ class ProductItem extends StatelessWidget {
               icon: Icon(productData.isFavorite
                   ? Icons.favorite
                   : Icons.favorite_border),
-              onPressed: () {
+              onPressed: () async {
                 print('Favorite rebuil');
-                productData.toggleFavoriteStatus();
+                await productData.toggleFavoriteStatus(productData, context);
               },
               color: Theme.of(context).accentColor,
             ),

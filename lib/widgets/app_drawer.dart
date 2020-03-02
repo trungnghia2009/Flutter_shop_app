@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/products_overview_screen.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products_screen.dart';
+import '../screens/themes_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -14,6 +15,15 @@ class AppDrawer extends StatelessWidget {
             // TODO: ignore back button
             automaticallyImplyLeading: false,
           ),
+          ListTileWidget(
+            icon: Icons.settings,
+            label: 'Settings',
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(ThemesScreen.routeName);
+            },
+          ),
+          Divider(),
           ListTileWidget(
             icon: Icons.shop,
             label: 'Shop',

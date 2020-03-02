@@ -85,16 +85,18 @@ class Cart with ChangeNotifier {
   }
 
   // TODO: update price
-  void updatePrice(String productId, double newPrice) {
-    _items.update(
-      productId,
-      (existingCartItem) => CartItem(
-        id: existingCartItem.id,
-        title: existingCartItem.title,
-        price: newPrice,
-        quality: existingCartItem.quality,
-      ),
-    );
+  void updatePriceIfProductAlreadyAdded(String productId, double newPrice) {
+    if (_items[productId] != null) {
+      _items.update(
+        productId,
+        (existingCartItem) => CartItem(
+          id: existingCartItem.id,
+          title: existingCartItem.title,
+          price: newPrice,
+          quality: existingCartItem.quality,
+        ),
+      );
+    }
   }
 
   void removeItem(String productId) {

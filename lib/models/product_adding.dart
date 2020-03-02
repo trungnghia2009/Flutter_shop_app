@@ -1,22 +1,24 @@
 import 'package:flutter/foundation.dart';
 
-class ProductForm {
+class ProductAdding {
   final String id;
   final String title;
   final String description;
   final double price;
   final String imageUrl;
-  ProductForm({
+  bool isFavorite;
+  ProductAdding({
     @required this.id,
     @required this.title,
     @required this.description,
     @required this.price,
     @required this.imageUrl,
+    this.isFavorite = false,
   });
 }
 
 class Edited {
-  ProductForm _editedProduct = ProductForm(
+  ProductAdding _editedProduct = ProductAdding(
     id: null,
     title: '',
     description: '',
@@ -24,7 +26,7 @@ class Edited {
     imageUrl: '',
   );
 
-  ProductForm get editedProduct {
+  ProductAdding get editedProduct {
     return _editedProduct;
   }
 }

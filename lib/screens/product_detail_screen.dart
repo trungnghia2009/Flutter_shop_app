@@ -7,17 +7,16 @@ import '../providers/cart.dart' show Cart;
 import 'cart_screen.dart';
 import '../widgets/round_icon_button.dart';
 import '../widgets/badge2.dart';
+import '../providers/product.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const String routeName = 'products_detail_screen';
   @override
   Widget build(BuildContext context) {
     print('ProductDetailScreen() rebuild');
-    final productId = ModalRoute.of(context).settings.arguments as String;
+    final product = ModalRoute.of(context).settings.arguments as Product;
     // TODO: make sure this page do not rebuild when products data change, adding 'listen: false'
-    final productsData = Provider.of<Products>(context, listen: false);
 
-    final product = productsData.findById(productId);
     final cartData = Provider.of<Cart>(context, listen: false);
 
     return Scaffold(
@@ -35,9 +34,6 @@ class ProductDetailScreen extends StatelessWidget {
                 Navigator.of(context).pushNamed(CartScreen.routeName);
               },
             ),
-          ),
-          SizedBox(
-            width: 30,
           ),
         ],
       ),
@@ -70,15 +66,25 @@ class ProductDetailScreen extends StatelessWidget {
                             Consumer<Products>(
                               builder: (context, productsData, child) =>
                                   IconButton(
-                                onPressed: () {
-                                  productsData.toggleFavoriteById(productId);
-                                },
                                 icon: Icon(
-                                  productsData.getFavoriteById(productId)
+                                  productsData.getFavoriteById(product.id)
                                       ? Icons.favorite
                                       : Icons.favorite_border,
                                   color: Theme.of(context).accentColor,
                                 ),
+                                onPressed: () async {
+                                  try {
+                                    await productsData
+                                        .toggleFavoriteById(product);
+                                  } catch (error) {
+                                    print(error);
+                                    Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Could not add favorite'),
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                             ),
                             SizedBox(
@@ -87,14 +93,14 @@ class ProductDetailScreen extends StatelessWidget {
                             RoundIconButton(
                               onPressed: () {
                                 print('--');
-                                cartData.removeItemById(productId);
+                                cartData.removeItemById(product.id);
                               },
                               icon: FontAwesomeIcons.minus,
                             ),
                             Consumer<Cart>(
                               builder: (_, cartData, child) => Badge2(
                                 cartData: cartData,
-                                productId: productId,
+                                productId: product.id,
                                 color: Colors.white,
                               ),
                             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RoundIconButton extends StatelessWidget {
   final Function onPressed;
@@ -16,6 +15,7 @@ class RoundIconButton extends StatelessWidget {
       child: Icon(
         icon,
         size: 18,
+        color: Colors.black,
       ),
       fillColor: Colors.white,
       shape: CircleBorder(),
