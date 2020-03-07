@@ -7,6 +7,7 @@ import 'cart_screen.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/products.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/theme_type.dart';
 
 enum FilterOptions {
   Favorites,
@@ -22,6 +23,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isFavoritesOnly = false;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<bool> _onWillPop() {
     print('action...');
@@ -65,13 +67,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   Future<void> _refreshProducts() async {
     await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  }
+
+  void _showDrawer(BuildContext context) {
+    _scaffoldKey.currentState.openEndDrawer();
   }
 
   @override
@@ -79,6 +80,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('MyShop'),
           actions: <Widget>[
@@ -117,6 +119,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 },
               ),
             ),
+            IconButton(
+                icon: Icon(Icons.map),
+                onPressed: () {
+                  _scaffoldKey.currentState.openDrawer();
+                })
           ],
         ),
         body: _isLoading

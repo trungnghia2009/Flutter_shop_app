@@ -7,6 +7,14 @@ import 'dart:convert';
 import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
+  String _authToken;
+  String _userId;
+
+  void updateToken(String tokenValue, String userIdValue) {
+    _authToken = tokenValue;
+    _userId = userIdValue;
+  }
+
   List<Product> _items = [
 //    Product(
 //      id: 'p1',
@@ -54,12 +62,25 @@ class Products with ChangeNotifier {
     return _items.firstWhere((item) => item.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    const url = 'https://flutter-shop-app-b7959.firebaseio.com/products.json';
+  // TODO: make filterByUser is optional argument, you can adjust the value
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&equalTo="$_userId"' : '';
+    final url =
+        'https://flutter-shop-app-b7959.firebaseio.com/products.json?auth=$_authToken$filterString';
     try {
       final respond = await http.get(url);
       print(json.decode(respond.body));
       final extractedData = json.decode(respond.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+
+      final favoriteUrl =
+          'https://flutter-shop-app-b7959.firebaseio.com/userFavorites/$_userId.json?auth=$_authToken';
+      final favoriteRespond = await http.get(favoriteUrl);
+      final favoriteData = json.decode(favoriteRespond.body);
+
       final List<Product> loadedProducts = [];
       extractedData
           .forEach((productId, productData) => loadedProducts.add(Product(
@@ -68,7 +89,9 @@ class Products with ChangeNotifier {
                 description: productData['description'],
                 price: productData['price'],
                 imageUrl: productData['imageUrl'],
-                isFavorite: productData['isFavorite'],
+                isFavorite: favoriteData == null
+                    ? false
+                    : favoriteData[productId] ?? false,
               )));
       _items = loadedProducts;
       notifyListeners();
@@ -80,7 +103,8 @@ class Products with ChangeNotifier {
   // TODO: return Future<void>
   Future<void> addProduct(ProductAdding product) async {
     // TODO: post new product to firebase
-    const url = 'https://flutter-shop-app-b7959.firebaseio.com/products.json';
+    final url =
+        'https://flutter-shop-app-b7959.firebaseio.com/products.json?auth=$_authToken';
     // TODO: Handle Exception
     try {
       final respond = await http.post(url,
@@ -89,9 +113,8 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
+            'creatorId': _userId,
           }));
-      print(json.decode(respond.body));
       final Product newProduct = Product(
         id: json.decode(respond.body)['name'],
         title: product.title,
@@ -110,7 +133,7 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(int index, Product product) async {
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json';
+        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json?auth=$_authToken';
     try {
       await http.patch(url,
           body: json.encode({
@@ -131,7 +154,7 @@ class Products with ChangeNotifier {
 
   Future<void> removeProduct(Product product) async {
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json';
+        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json?auth=$_authToken';
     final existingProductIndex =
         _items.indexWhere((item) => item.id == product.id);
     // TODO: delete local product first
@@ -147,15 +170,15 @@ class Products with ChangeNotifier {
     product = null;
   }
 
-  Future<void> toggleFavoriteById(Product product) async {
+  Future<void> toggleFavoriteById(Product product, String userId) async {
     product.isFavorite = !product.isFavorite;
     notifyListeners();
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json';
-    final respond = await http.patch(url,
-        body: json.encode({
-          'isFavorite': product.isFavorite,
-        }));
+        'https://flutter-shop-app-b7959.firebaseio.com/userFavorites/$userId/${product.id}.json?auth=$_authToken';
+    final respond = await http.put(url,
+        body: json.encode(
+          product.isFavorite,
+        ));
     print(respond.statusCode);
     if (respond.statusCode >= 400) {
       product.isFavorite = !product.isFavorite;

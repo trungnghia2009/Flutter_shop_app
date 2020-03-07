@@ -71,36 +71,43 @@ class _OrderItemState extends State<OrderItem> {
         final oderData = Provider.of<Orders>(context, listen: false);
         oderData.removeOrder(widget.order.id);
       },
-      child: Card(
-        margin: EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              leading: CircleAvatar(
-                radius: 30,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  // TODO: focus on FittedBox, fit child into the box
-                  child: FittedBox(child: Text('#${widget.index + 1}')),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        height: _expanded
+            ? min(210, widget.order.products.length * 20.0 + 110)
+            : 90,
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    // TODO: focus on FittedBox, fit child into the box
+                    child: FittedBox(child: Text('#${widget.index + 1}')),
+                  ),
+                ),
+                title: Text('\$${widget.order.amount.toStringAsFixed(2)}'),
+                subtitle: Text(
+                  DateFormat('MMM d, yyyy hh:mm').format(widget.order.dateTime),
+                ),
+                trailing: IconButton(
+                  icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+                  onPressed: () {
+                    setState(() {
+                      _expanded = !_expanded;
+                    });
+                  },
                 ),
               ),
-              title: Text('\$${widget.order.amount.toStringAsFixed(2)}'),
-              subtitle: Text(
-                DateFormat('MMM d, yyyy hh:mm').format(widget.order.dateTime),
-              ),
-              trailing: IconButton(
-                icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-                onPressed: () {
-                  setState(() {
-                    _expanded = !_expanded;
-                  });
-                },
-              ),
-            ),
-            if (_expanded)
-              Container(
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
                 padding: EdgeInsets.all(10),
-                height: min(120, widget.order.products.length * 40.0),
+                height: _expanded
+                    ? min(100, widget.order.products.length * 20.0 + 20)
+                    : 0,
                 child: ListView(
                   children: widget.order.products
                       .map((product) => Row(
@@ -125,7 +132,8 @@ class _OrderItemState extends State<OrderItem> {
                       .toList(),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

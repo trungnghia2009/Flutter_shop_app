@@ -2,25 +2,45 @@ import 'package:flutter/material.dart';
 import '../screens/products_overview_screen.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products_screen.dart';
-import '../screens/themes_screen.dart';
+import '../screens/settings_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth.dart';
+import '../screens/user_detail_screen.dart';
+import '../helpers/path.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print('AppDrawer rebuild ...');
     return Drawer(
       child: Column(
         children: <Widget>[
           AppBar(
-            title: Text('Menu'),
+            title: Text('G-Shop'),
             // TODO: ignore back button
             automaticallyImplyLeading: false,
+            actions: <Widget>[
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 30),
+                child: GestureDetector(
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage(Path.avatarImageDefault),
+                    minRadius: 25,
+                  ),
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushReplacementNamed(UserDetailScreen.routeName);
+                  },
+                ),
+              ),
+            ],
           ),
           ListTileWidget(
             icon: Icons.settings,
-            label: 'Settings',
+            label: 'App Settings',
             onTap: () {
               Navigator.of(context)
-                  .pushReplacementNamed(ThemesScreen.routeName);
+                  .pushReplacementNamed(SettingsScreen.routeName);
             },
           ),
           Divider(),
@@ -50,6 +70,17 @@ class AppDrawer extends StatelessWidget {
                   .pushReplacementNamed(UserProductsScreen.routeName);
             },
           ),
+          Divider(),
+          ListTileWidget(
+            label: 'Log Out',
+            onTap: () {
+              Navigator.of(context).pop();
+              // TODO: push to homePage
+              Navigator.of(context).pushReplacementNamed('/');
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            icon: Icons.close,
+          )
         ],
       ),
     );

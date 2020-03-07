@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
-import '../providers/orders.dart';
+import '../widgets/order_flat_button.dart';
 
 class CartScreen extends StatelessWidget {
   static const String routeName = 'cart_screen';
@@ -34,66 +34,10 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      cartData.totalAmount > 0
-                          ? showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                // return object of type Dialog
-                                return AlertDialog(
-                                  title: Text("Make an order ?"),
-                                  content:
-                                      Text("This will lead you to order page."),
-                                  actions: <Widget>[
-                                    // usually buttons at the bottom of the dialog
-                                    FlatButton(
-                                      child: Text("No"),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    FlatButton(
-                                      child: Text("Yes"),
-                                      onPressed: () {
-                                        Provider.of<Orders>(context,
-                                                listen: false)
-                                            .addOrder(
-                                                cartData.items.values.toList(),
-                                                cartData.totalAmount);
-                                        Navigator.of(context).pop();
-//                                        Navigator.of(context)
-//                                            .pushReplacementNamed(
-//                                                OrdersScreen.routeName);
-                                        cartData.clearCart();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            )
-                          : showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                // return object of type Dialog
-                                return AlertDialog(
-                                  title: new Text("There is no item in cart"),
-                                  actions: <Widget>[
-                                    // usually buttons at the bottom of the dialog
-                                    new FlatButton(
-                                      child: new Text("Close"),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                    },
-                    child: Text('ORDER NOW'),
-                    textColor: Theme.of(context).primaryColor,
-                  )
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: OrderFlatButton(cartData: cartData),
+                  ),
                 ],
               ),
             ),
@@ -101,7 +45,11 @@ class CartScreen extends StatelessWidget {
           SizedBox(height: 10),
           // TODO: IF were in column, must define height for ListView
           cartData.items.length == 0
-              ? Center(child: Text('There is no item in cart!'))
+              ? Center(
+                  child: Text(
+                  'There is no item in cart!',
+                  style: TextStyle(fontSize: 18),
+                ))
               : Expanded(
                   child: ListView.builder(
                     itemCount: cartData.items.length,

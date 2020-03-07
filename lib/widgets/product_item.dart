@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
 import 'badge2.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   @override
@@ -13,6 +14,7 @@ class ProductItem extends StatelessWidget {
     // TODO: not change except for widgets that were wrapped by Consumer<>
     final productData = Provider.of<Product>(context, listen: false);
     final cartData = Provider.of<Cart>(context);
+    final authData = Provider.of<Auth>(context, listen: false);
     // TODO: ClipRRect forces the child widget it wraps into a certain shape
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
@@ -22,9 +24,14 @@ class ProductItem extends StatelessWidget {
             Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
                 arguments: productData);
           },
-          child: Image.network(
-            productData.imageUrl,
-            fit: BoxFit.cover,
+          // TODO: Add placeholder
+          child: Hero(
+            tag: productData.id,
+            child: FadeInImage(
+              placeholder: AssetImage('assets/images/placeholder2.jpg'),
+              image: NetworkImage(productData.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         footer: GridTileBar(
@@ -38,7 +45,8 @@ class ProductItem extends StatelessWidget {
                   : Icons.favorite_border),
               onPressed: () async {
                 print('Favorite rebuil');
-                await productData.toggleFavoriteStatus(productData, context);
+                await productData.toggleFavoriteStatus(
+                    productData, context, authData.token, authData.userId);
               },
               color: Theme.of(context).accentColor,
             ),

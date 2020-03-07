@@ -4,16 +4,12 @@ import '../widgets/app_drawer.dart';
 import '../providers/products.dart';
 import '../widgets/user_product_item.dart';
 import 'add_product_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class UserProductsScreen extends StatefulWidget {
+class UserProductsScreen extends StatelessWidget {
   static const String routeName = 'user_products_screen';
 
-  @override
-  _UserProductsScreenState createState() => _UserProductsScreenState();
-}
-
-class _UserProductsScreenState extends State<UserProductsScreen> {
-  Future<bool> _onWillPop() {
+  Future<bool> _onWillPop(BuildContext context) {
     print('action...');
     return showDialog(
           context: context,
@@ -38,15 +34,17 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         false;
   }
 
-  Future<void> _refreshProducts() async {
-    await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context);
+//    final productsData = Provider.of<Products>(context);
+    print('rebuilding .....');
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: () => _onWillPop(context),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Your Products'),
@@ -61,20 +59,31 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
         drawer: AppDrawer(),
         // TODO: show list of Products
         // TODO: add refresh indicator
-        body: RefreshIndicator(
-          onRefresh: _refreshProducts,
-          child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: ListView.builder(
-                itemCount: productsData.items.length,
-                itemBuilder: (_, index) => ChangeNotifierProvider.value(
-                  value: productsData.items[index],
-                  child: UserProductItem(
-                    productIndex: index,
-                    product: productsData.items[index],
+        body: FutureBuilder(
+          future: _refreshProducts(context),
+          builder: (ctx, snapshot) => snapshot.connectionState ==
+                  ConnectionState.waiting
+              ? SpinKitFadingCircle(
+                  color: Theme.of(context).primaryColor,
+                )
+              : RefreshIndicator(
+                  onRefresh: () => _refreshProducts(context),
+                  child: Consumer<Products>(
+                    builder: (ctx, productsData, child) => Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: ListView.builder(
+                        itemCount: productsData.items.length,
+                        itemBuilder: (_, index) => ChangeNotifierProvider.value(
+                          value: productsData.items[index],
+                          child: UserProductItem(
+                            productIndex: index,
+                            product: productsData.items[index],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              )),
         ),
       ),
     );

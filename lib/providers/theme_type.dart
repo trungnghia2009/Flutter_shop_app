@@ -1,61 +1,92 @@
 import 'package:flutter/material.dart';
+import '../models/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeType {
+enum ThemeSet {
+  purpleTheme,
+  pinkTheme,
+  blueTheme,
+  darkTheme,
+}
+
+class ThemeDefinition {
   final Color primarySwatch;
   final Color accentColor;
   final Color errorColor;
-  ThemeType({
+  final Color buttonColor;
+  ThemeDefinition({
     @required this.primarySwatch,
     @required this.accentColor,
     @required this.errorColor,
+    @required this.buttonColor,
   });
 }
 
 class ThemeTypes with ChangeNotifier {
-  List<ThemeType> _themeTypes = [
-    ThemeType(
+  List<ThemeDefinition> _themeTypes = [
+    ThemeDefinition(
       primarySwatch: Colors.purple,
       accentColor: Colors.deepOrange,
       errorColor: Colors.red,
+      buttonColor: Colors.purple,
     ),
-    ThemeType(
+    ThemeDefinition(
       primarySwatch: Colors.pink,
       accentColor: Colors.blue,
       errorColor: Colors.greenAccent,
+      buttonColor: Colors.pink,
     ),
-    ThemeType(
+    ThemeDefinition(
       primarySwatch: Colors.blue,
       accentColor: Colors.purple,
       errorColor: Colors.orange,
+      buttonColor: Colors.blue,
     ),
   ];
 
-  List<ThemeType> get themeTypes {
+  Future<void> saveTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('themeValue', _themeValue);
+  }
+
+  List<ThemeDefinition> get themeTypes {
     return [..._themeTypes];
   }
 
-  int _themeTypeValue = 0;
-  int get getThemeTypeValue {
-    return _themeTypeValue;
+  void updateThemeValue(int value) {
+    _themeValue = value;
+  }
+
+  int _themeValue;
+
+  ThemeTypes() {
+    setup();
+  }
+
+  Future<void> setup() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int temp = prefs.getInt('themeValue') ?? 0;
+    _themeValue = temp;
+    notifyListeners();
+  }
+
+  get getThemeTypeValue {
+    return _themeValue;
   }
 
   void setThemeTypeValue(int value) {
-    _themeTypeValue = value;
+    _themeValue = value;
     notifyListeners();
   }
 
-  void changeThemeTypeValue(int value) {
-    _themeTypeValue = value;
-    notifyListeners();
-  }
-
-  ThemeType getTheme() {
-    return _themeTypes[_themeTypeValue];
+  ThemeDefinition getTheme() {
+    return _themeTypes[_themeValue];
   }
 
   ThemeData getDarkTheme() {
     return ThemeData.dark().copyWith(
       accentColor: Colors.deepOrange,
+      buttonColor: Colors.white,
     );
   }
 }

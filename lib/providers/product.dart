@@ -35,17 +35,14 @@ class Product with ChangeNotifier {
   }
 
   // TODO: standard for favorite
-  Future<void> toggleFavoriteStatus(
-      Product product, BuildContext context) async {
+  Future<void> toggleFavoriteStatus(Product product, BuildContext context,
+      String authToken, String userId) async {
     convertFavorite(product);
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json';
-
+        'https://flutter-shop-app-b7959.firebaseio.com/userFavorites/$userId/${product.id}.json?auth=$authToken';
     try {
-      final respond = await http.patch(url,
-          body: json.encode({
-            'isFavorite': isFavorite,
-          }));
+      // TODO: only use isFavorite => use put
+      final respond = await http.put(url, body: json.encode(isFavorite));
       if (respond.statusCode >= 400) {
         print('status code');
         convertFavorite(product);
