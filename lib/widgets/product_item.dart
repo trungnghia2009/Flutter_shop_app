@@ -5,6 +5,7 @@ import '../providers/product.dart';
 import '../providers/cart.dart';
 import 'badge2.dart';
 import '../providers/auth.dart';
+import '../helpers/path.dart';
 
 class ProductItem extends StatelessWidget {
   @override
@@ -28,7 +29,7 @@ class ProductItem extends StatelessWidget {
           child: Hero(
             tag: productData.id,
             child: FadeInImage(
-              placeholder: AssetImage('assets/images/placeholder2.jpg'),
+              placeholder: AssetImage(Path.loadingImage),
               image: NetworkImage(productData.imageUrl),
               fit: BoxFit.cover,
             ),
