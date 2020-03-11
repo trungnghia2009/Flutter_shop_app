@@ -58,8 +58,8 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavorite).toList();
   }
 
-  Product findById(String id) {
-    return _items.firstWhere((item) => item.id == id);
+  Product findByTitle(String title) {
+    return _items.firstWhere((item) => item.title == title);
   }
 
   // TODO: make filterByUser is optional argument, you can adjust the value

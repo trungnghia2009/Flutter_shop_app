@@ -18,10 +18,10 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   String _authToken;
-  String _userID;
+  String _userId;
   void updateToken(String tokenValue, String userIdValue) {
     _authToken = tokenValue;
-    _userID = userIdValue;
+    _userId = userIdValue;
   }
 
   List<OrderItem> _orders = [];
@@ -31,7 +31,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/orders/$_userID.json?auth=$_authToken';
+        'https://flutter-shop-app-b7959.firebaseio.com/orders/$_userId.json?auth=$_authToken';
     DateTime tempTime = DateTime.now();
 
     // TODO: Need to add Exception handling
@@ -62,7 +62,7 @@ class Orders with ChangeNotifier {
   // TODO: set filterByUserId is optional
   Future<void> fetchAndSetOrders() async {
     final url =
-        'https://flutter-shop-app-b7959.firebaseio.com/orders/$_userID.json?auth=$_authToken';
+        'https://flutter-shop-app-b7959.firebaseio.com/orders/$_userId.json?auth=$_authToken';
     final respond = await http.get(url);
     print(json.decode(respond.body));
     final extractedData = json.decode(respond.body) as Map<String, dynamic>;
@@ -93,8 +93,13 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeOrder(String orderId) {
-    final removeOrder = _orders.firstWhere((order) => order.id == orderId);
-    _orders.remove(removeOrder);
+  Future<void> removeOrder(String orderId) async {
+    final url =
+        'https://flutter-shop-app-b7959.firebaseio.com/orders/$_userId/$orderId.json?auth=$_authToken';
+    final respond = await http.delete(url);
+    print(jsonDecode(respond.body));
+    final removeOrder = _orders.indexWhere((order) => order.id == orderId);
+    _orders.removeAt(removeOrder);
+    notifyListeners();
   }
 }

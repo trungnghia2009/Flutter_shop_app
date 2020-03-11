@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 class RoundIconButton extends StatelessWidget {
   final Function onPressed;
   final IconData icon;
-  RoundIconButton({
-    @required this.onPressed,
-    @required this.icon,
-  });
+  final Color fillColor;
+  final Color iconColor;
+  RoundIconButton(
+      {@required this.onPressed,
+      @required this.icon,
+      this.fillColor = Colors.white,
+      this.iconColor = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +18,9 @@ class RoundIconButton extends StatelessWidget {
       child: Icon(
         icon,
         size: 18,
-        color: Colors.black,
+        color: iconColor,
       ),
-      fillColor: Colors.white,
+      fillColor: fillColor,
       shape: CircleBorder(),
       constraints: BoxConstraints.tightFor(
         width: 25.0,

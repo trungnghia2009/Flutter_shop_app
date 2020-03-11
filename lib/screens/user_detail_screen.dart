@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exception.dart';
 import 'package:intl/intl.dart';
-import '../helpers/path.dart';
+import '../widgets/avatar_input.dart';
 
 class UserDetailScreen extends StatefulWidget {
   static const String routeName = 'user_detail_screen';
@@ -16,7 +16,8 @@ class UserDetailScreen extends StatefulWidget {
 class _UserDetailScreenState extends State<UserDetailScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  var _isNextButton = false;
   Map<String, String> _password = {
     'currentPassword': '',
     'newPassword': '',
@@ -65,7 +66,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
     setState(() {
       _isNextLoading = false;
-      _passwordController.clear();
+      _newPasswordController.clear();
     });
   }
 
@@ -99,14 +100,14 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     setState(() {
       _isNextLoading = false;
       _isNewPassword = false;
-      _passwordController.clear();
+      _newPasswordController.clear();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final authData = Provider.of<Auth>(context, listen: false);
-
+    print('UserDetailScreen() rebuild');
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -119,36 +120,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
               margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               child: Row(
                 children: <Widget>[
-                  Container(
-                    width: 100,
-                    height: 100,
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    child: Stack(
-                      children: <Widget>[
-                        FittedBox(
-                          child: Image.asset(Path.avatarImageDefault),
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          right: 2,
-                          bottom: 2,
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Icon(
-                              Icons.add_circle,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  AvatarInput(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -162,6 +134,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                           fontSize: 15,
                           color: Colors.grey,
                         ),
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.clip,
                       )
                     ],
                   )
@@ -191,12 +166,27 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                               Column(
                                 children: <Widget>[
                                   TextFormField(
+                                    autovalidate: true,
                                     obscureText: true,
                                     decoration: InputDecoration(
                                         labelText: 'Current Password'),
                                     validator: (value) {
-                                      if (value.isEmpty || value.length < 6) {
+                                      if (value.length < 6 &&
+                                          value.length > 0) {
+                                        Future.delayed(Duration.zero).then((_) {
+                                          setState(() {
+                                            _isNextButton = false;
+                                          });
+                                        });
                                         return 'Password is too short!';
+                                      }
+                                      if (value.length >= 6) {
+                                        Future.delayed(Duration.zero)
+                                            .then((_) => {
+                                                  setState(() {
+                                                    _isNextButton = true;
+                                                  })
+                                                });
                                       }
                                       return null;
                                     },
@@ -211,9 +201,11 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                       ? CircularProgressIndicator()
                                       : ActionButton(
                                           label: 'NEXT',
-                                          onPressed: () {
-                                            _next();
-                                          },
+                                          onPressed: _isNextButton
+                                              ? () {
+                                                  _next();
+                                                }
+                                              : null,
                                         ),
                                 ],
                               ),
@@ -224,7 +216,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                 children: <Widget>[
                                   TextFormField(
                                     obscureText: true,
-                                    controller: _passwordController,
+                                    controller: _newPasswordController,
                                     decoration: InputDecoration(
                                         labelText: 'New Password'),
                                     validator: (value) {
@@ -242,7 +234,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                     decoration: InputDecoration(
                                         labelText: 'Confirm New Password'),
                                     validator: (value) {
-                                      if (_passwordController.text != value) {
+                                      if (_newPasswordController.text !=
+                                          value) {
                                         return 'Passwords do not match!';
                                       }
                                       return null;
@@ -256,7 +249,11 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                       : ActionButton(
                                           label: 'APPLY',
                                           onPressed: () {
-                                            _apply();
+                                            _apply().then((_) {
+                                              setState(() {
+                                                _isNextButton = false;
+                                              });
+                                            });
                                           },
                                         ),
                                 ],

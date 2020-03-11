@@ -17,47 +17,51 @@ import 'screens/settings_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/user_detail_screen.dart';
+import 'providers/avatar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.getInstance().then((prefs) {
+    var themeType = prefs.getInt('themeValue') ?? 0;
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (ctx) => Cart(),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => Auth(),
+          ),
+          ChangeNotifierProvider<ThemeTypes>(
+            create: (ctx) => ThemeTypes(themeType),
+          ),
+          ChangeNotifierProxyProvider<Auth, Avatar>(
+            update: (_, auth, avatar) =>
+                avatar..updateToken(auth.token, auth.userId),
+            create: (ctx) => Avatar(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Products>(
+            update: (_, auth, products) =>
+                products..updateToken(auth.token, auth.userId),
+            create: (ctx) => Products(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (_, auth, orders) =>
+                orders..updateToken(auth.token, auth.userId),
+            create: (ctx) => Orders(),
+          ),
+        ],
+        // TODO: ensure that MyMaterialApp is rebuild whenever Auth change
+        child: MyMaterialApp(),
+      ),
+    );
+  });
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Add multi providers
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => Cart(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => Auth(),
-        ),
-        ChangeNotifierProxyProvider<Auth, ThemeTypes>(
-          update: (_, auth, themeTypes) =>
-              themeTypes..updateThemeValue(auth.themeValue),
-          create: (ctx) => ThemeTypes(),
-        ),
-        ChangeNotifierProxyProvider<Auth, Products>(
-          update: (_, auth, products) =>
-              products..updateToken(auth.token, auth.userId),
-          create: (ctx) => Products(),
-        ),
-        ChangeNotifierProxyProvider<Auth, Orders>(
-          update: (_, auth, orders) =>
-              orders..updateToken(auth.token, auth.userId),
-          create: (ctx) => Orders(),
-        ),
-      ],
-      // TODO: ensure that MyMaterialApp is rebuild whenever Auth change
-      child: MyMaterialApp(),
-    );
-  }
 }
 
 class MyMaterialApp extends StatelessWidget {

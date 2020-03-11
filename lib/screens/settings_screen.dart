@@ -41,11 +41,18 @@ class SettingsScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text('Settings'),
             actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.save),
-                onPressed: () async {
-                  await themesData.saveTheme();
-                },
+              Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(Icons.save),
+                  onPressed: () {
+                    themesData.saveTheme().then((_) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Saved theme'),
+                        duration: Duration(seconds: 2),
+                      ));
+                    });
+                  },
+                ),
               ),
             ],
           ),

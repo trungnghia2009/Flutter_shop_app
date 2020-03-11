@@ -19,6 +19,7 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.order.id);
     return Dismissible(
       key: ValueKey(widget.order.id),
       background: Container(
@@ -67,9 +68,9 @@ class _OrderItemState extends State<OrderItem> {
           ),
         );
       },
-      onDismissed: (_) {
-        final oderData = Provider.of<Orders>(context, listen: false);
-        oderData.removeOrder(widget.order.id);
+      onDismissed: (direction) {
+        Provider.of<Orders>(context, listen: false)
+            .removeOrder(widget.order.id);
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),

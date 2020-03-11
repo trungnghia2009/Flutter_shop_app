@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app_flutter/widgets/round_icon_button.dart';
 import '../providers/cart.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../screens/product_detail_screen.dart';
+import '../providers/products.dart';
 
 class CartItem extends StatelessWidget {
   final String id;
@@ -17,6 +21,7 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productsData = Provider.of<Products>(context, listen: false);
     final cartData = Provider.of<Cart>(context, listen: false);
     return Dismissible(
       key: ValueKey(id),
@@ -84,10 +89,38 @@ class CartItem extends StatelessWidget {
                   child: FittedBox(child: Text('\$$price')),
                 ),
               ),
-              title: Text(title),
+              title: GestureDetector(
+                child: Text(title),
+                onTap: () {
+                  Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                      arguments: productsData.findByTitle(title));
+                },
+              ),
               subtitle:
                   Text('Total: \$${(price * quality).toStringAsFixed(2)}'),
-              trailing: Text('$quality x')),
+              trailing: Container(
+                width: 130,
+                child: Row(
+                  children: <Widget>[
+                    RoundIconButton(
+                      onPressed: () {
+                        cartData.removeItemById(productID);
+                      },
+                      icon: FontAwesomeIcons.minus,
+                    ),
+                    RoundIconButton(
+                      onPressed: () {
+                        cartData.addItem(productID, price, title);
+                      },
+                      icon: FontAwesomeIcons.plus,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text('$quality x'),
+                  ],
+                ),
+              )),
         ),
       ),
     );

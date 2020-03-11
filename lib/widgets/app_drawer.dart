@@ -7,10 +7,12 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../screens/user_detail_screen.dart';
 import '../helpers/path.dart';
+import '../providers/avatar.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final avatar = Provider.of<Avatar>(context, listen: false);
     print('AppDrawer rebuild ...');
     return Drawer(
       child: Column(
@@ -24,7 +26,9 @@ class AppDrawer extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 30),
                 child: GestureDetector(
                   child: CircleAvatar(
-                    backgroundImage: AssetImage(Path.avatarImageDefault),
+                    backgroundImage: avatar.avatarUrl == null
+                        ? AssetImage(Path.avatarImageDefault)
+                        : NetworkImage(avatar.avatarUrl),
                     minRadius: 25,
                   ),
                   onTap: () {

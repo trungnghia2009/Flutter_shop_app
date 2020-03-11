@@ -59,9 +59,7 @@ class ThemeTypes with ChangeNotifier {
 
   int _themeValue;
 
-  ThemeTypes() {
-    setup();
-  }
+  ThemeTypes(this._themeValue);
 
   Future<void> setup() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

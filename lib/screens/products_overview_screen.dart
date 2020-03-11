@@ -8,6 +8,7 @@ import '../widgets/app_drawer.dart';
 import '../providers/products.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../providers/theme_type.dart';
+import '../providers/avatar.dart';
 
 enum FilterOptions {
   Favorites,
@@ -61,6 +62,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     Provider.of<Products>(context, listen: false)
         .fetchAndSetProducts()
         .then((_) {
+      Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
+    }).then((_) {
       setState(() {
         _isLoading = false;
       });

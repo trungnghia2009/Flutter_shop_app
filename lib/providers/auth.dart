@@ -13,14 +13,6 @@ class Auth with ChangeNotifier {
   Timer _authTimer;
   DateTime _loginDate;
 
-  // For settings
-  int _themeValue = 0;
-
-  Future<void> initTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    _themeValue = prefs.getInt('themeValue') ?? 0;
-  }
-
   // TODO: If we had a token and the token didn't expire
   bool get isAuth {
     return token != null;
@@ -45,10 +37,6 @@ class Auth with ChangeNotifier {
 
   DateTime get loginDate {
     return _loginDate;
-  }
-
-  int get themeValue {
-    return _themeValue;
   }
 
   Future<void> _authenticate(
@@ -94,10 +82,8 @@ class Auth with ChangeNotifier {
         'expiryDate': _expiryDate.toIso8601String(),
       });
       prefs.setString('userData', userData);
-      _themeValue = prefs.getInt('themeValue') ?? 0;
       _loginDate = DateTime.now();
       print('Hey-----------------------------');
-      print('ThemeValue: $_themeValue');
       print('Token: $_token\n'
           'email: $_email\nUserId: $_userId\nExpiresIn: ${respondData['expiresIn'].toString()}');
     } catch (error) {
@@ -137,7 +123,6 @@ class Auth with ChangeNotifier {
     _email = extractedUserData['email'];
     _expiryDate = expiryDate;
     _loginDate = DateTime.now();
-    _themeValue = prefs.getInt('themeValue') ?? 0;
     notifyListeners();
     _autoLogout();
     print(
@@ -160,7 +145,6 @@ class Auth with ChangeNotifier {
     if (currentThemeValue == null) {
       prefs.setInt('themeValue', 0);
     }
-    _themeValue = prefs.getInt('themeValue');
     prefs.remove('userData');
   }
 

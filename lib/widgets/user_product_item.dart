@@ -12,7 +12,7 @@ class UserProductItem extends StatelessWidget {
   UserProductItem({@required this.productIndex, @required this.product});
   @override
   Widget build(BuildContext context) {
-    final productData = Provider.of<Product>(context);
+//    final productData = Provider.of<Product>(context);
     final productsData = Provider.of<Products>(context);
     final snackBar = Scaffold.of(context);
 
@@ -20,7 +20,7 @@ class UserProductItem extends StatelessWidget {
       elevation: 5,
       child: ListTile(
 //        key: ValueKey(productData.id),
-        subtitle: Text('Price: \$${productData.price}'),
+        subtitle: Text('Price: \$${product.price}'),
         trailing: Container(
           width: 100,
           child: Row(
@@ -76,14 +76,14 @@ class UserProductItem extends StatelessWidget {
         ),
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                arguments: productData);
+            Navigator.of(context)
+                .pushNamed(ProductDetailScreen.routeName, arguments: product);
           },
           child: CircleAvatar(
-            backgroundImage: NetworkImage(productData.imageUrl),
+            backgroundImage: NetworkImage(product.imageUrl),
           ),
         ),
-        title: Text(productData.title),
+        title: Text(product.title),
       ),
     );
   }
