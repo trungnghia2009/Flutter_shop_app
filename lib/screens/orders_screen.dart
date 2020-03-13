@@ -4,6 +4,7 @@ import '../providers/orders.dart' show Orders;
 import '../widgets/order_item.dart';
 import '../widgets/app_drawer.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/screen_controller.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const String routeName = 'orders_screen';
@@ -38,21 +39,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
         false;
   }
 
-  var _isLoading = false;
-
   @override
   void initState() {
     super.initState();
-
-    print('1');
-    _isLoading = true;
-
-    Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
+    if (ScreenController.firstLoadingOnOrdersScreen) {
       setState(() {
-        print('2');
-        _isLoading = false;
+        ScreenController.setOrdersScreenLoading(true);
       });
-    });
+      Provider.of<Orders>(context, listen: false).fetchAndSetOrders().then((_) {
+        setState(() {
+          ScreenController.setOrdersScreenLoading(false);
+          ScreenController.setFirstLoadingOnOrdersScreen(false);
+        });
+      });
+    }
   }
 
   Future<void> _refreshOrders() async {
@@ -73,7 +73,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // TODO: No need to define height for ListView
           // TODO: using future builder
           // TODO: an alternative https://www.udemy.com/course/learn-flutter-dart-to-build-ios-android-apps/learn/lecture/15103292
-          body: _isLoading
+          body: ScreenController.ordersScreenLoading
               ? SpinKitFadingCircle(
                   color: Theme.of(context).primaryColor,
                 )

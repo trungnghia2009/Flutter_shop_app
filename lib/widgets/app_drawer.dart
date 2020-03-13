@@ -78,10 +78,29 @@ class AppDrawer extends StatelessWidget {
           ListTileWidget(
             label: 'Log Out',
             onTap: () {
-              Navigator.of(context).pop();
-              // TODO: push to homePage
-              Navigator.of(context).pushReplacementNamed('/');
-              Provider.of<Auth>(context, listen: false).logout();
+              return showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text('Log Out'),
+                  content: Text('Do you really want to log out ?'),
+                  actions: <Widget>[
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('No')),
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          // TODO: push to homePage
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/', (Route<dynamic> route) => false);
+                          Provider.of<Auth>(context, listen: false).logout();
+                        },
+                        child: Text('Yes')),
+                  ],
+                ),
+              );
             },
             icon: Icons.close,
           )

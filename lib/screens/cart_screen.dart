@@ -22,7 +22,7 @@ class CartScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Total', style: TextStyle(fontSize: 20)),
+                  Text('Total', style: const TextStyle(fontSize: 20)),
                   Spacer(),
                   Chip(
                     label: Text(

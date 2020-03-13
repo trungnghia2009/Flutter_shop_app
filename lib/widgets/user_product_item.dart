@@ -4,7 +4,7 @@ import '../providers/product.dart';
 import '../providers/products.dart';
 import '../screens/edit_product_screen.dart';
 import '../screens/product_detail_screen.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/screen_controller.dart';
 
 class UserProductItem extends StatelessWidget {
   final int productIndex;
@@ -12,7 +12,6 @@ class UserProductItem extends StatelessWidget {
   UserProductItem({@required this.productIndex, @required this.product});
   @override
   Widget build(BuildContext context) {
-//    final productData = Provider.of<Product>(context);
     final productsData = Provider.of<Products>(context);
     final snackBar = Scaffold.of(context);
 
@@ -26,11 +25,12 @@ class UserProductItem extends StatelessWidget {
           child: Row(
             children: <Widget>[
               IconButton(
-                  icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(EditProductScreen.routeName,
-                        arguments: productIndex);
-                  }),
+                icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(EditProductScreen.routeName,
+                      arguments: productIndex);
+                },
+              ),
               IconButton(
                   icon: Icon(Icons.delete, color: Theme.of(context).errorColor),
                   onPressed: () {
@@ -55,6 +55,9 @@ class UserProductItem extends StatelessWidget {
                                 Navigator.of(context).pop();
                                 try {
                                   await productsData.removeProduct(product);
+                                  ScreenController
+                                      .setFirstLoadingOnProductsOverviewScreen(
+                                          true);
                                   snackBar.showSnackBar(SnackBar(
                                       content: Text('Delete succeeded')));
                                 } catch (error) {

@@ -2,6 +2,7 @@ import '../providers/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/orders.dart';
+import '../providers/screen_controller.dart';
 
 class OrderFlatButton extends StatefulWidget {
   const OrderFlatButton({
@@ -51,8 +52,13 @@ class _OrderFlatButtonState extends State<OrderFlatButton> {
                                         listen: false)
                                     .addOrder(
                                         widget.cartData.items.values.toList(),
-                                        widget.cartData.totalAmount);
+                                        widget.cartData.totalAmount)
+                                    .then((_) {
+                                  ScreenController
+                                      .setFirstLoadingOnOrdersScreen(true);
+                                });
                                 widget.cartData.clearCart();
+
                                 setState(() {
                                   _isLoading = false;
                                 });

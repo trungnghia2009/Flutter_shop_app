@@ -5,6 +5,7 @@ import 'product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/http_exception.dart';
+import '../providers/screen_controller.dart';
 
 class Products with ChangeNotifier {
   String _authToken;
@@ -15,43 +16,15 @@ class Products with ChangeNotifier {
     _userId = userIdValue;
   }
 
-  List<Product> _items = [
-//    Product(
-//      id: 'p1',
-//      title: 'Pink Dress',
-//      description: 'A light pink dress - it is pretty hot!',
-//      price: 29.99,
-//      imageUrl:
-//          'https://znews-photo.zadn.vn/w660/Uploaded/cqdhmdxwp/2019_07_09/62256761_147565532983317_1295828558959990778_n_copy.jpg',
-//    ),
-//    Product(
-//      id: 'p2',
-//      title: 'Trousers',
-//      description: 'A nice pair of trousers.',
-//      price: 59.99,
-//      imageUrl:
-//          'https://anh.eva.vn//upload/2-2015/images/2015-06-23/1435073639-16.jpg',
-//    ),
-//    Product(
-//      id: 'p3',
-//      title: 'Yellow Scarf',
-//      description: 'Warm and cozy - exactly what you need for the winter.',
-//      price: 19.99,
-//      imageUrl:
-//          'https://www.dhresource.com/600x600/f2/albu/g6/M01/5A/24/rBVaR1uNScGAdFerAAYz0o0GkBM254.jpg',
-//    ),
-//    Product(
-//      id: 'p4',
-//      title: 'A Pan',
-//      description: 'Prepare any meal you want.',
-//      price: 49.99,
-//      imageUrl:
-//          'https://thumbs.dreamstime.com/b/smiling-little-girl-cook-hat-frying-pan-cooking-people-concept-51943804.jpg',
-//    ),
-  ];
+  List<Product> _items = [];
+  List<Product> _userItems = [];
 
   List<Product> get items {
     return [..._items];
+  }
+
+  List<Product> get userItems {
+    return [..._userItems];
   }
 
   List<Product> get favoriteItems {
@@ -93,7 +66,12 @@ class Products with ChangeNotifier {
                     ? false
                     : favoriteData[productId] ?? false,
               )));
-      _items = loadedProducts;
+      if (filterByUser) {
+        _userItems = loadedProducts;
+      } else {
+        _items = loadedProducts;
+      }
+
       notifyListeners();
     } catch (error) {
       throw error;
@@ -156,14 +134,15 @@ class Products with ChangeNotifier {
     final url =
         'https://flutter-shop-app-b7959.firebaseio.com/products/${product.id}.json?auth=$_authToken';
     final existingProductIndex =
-        _items.indexWhere((item) => item.id == product.id);
+        _userItems.indexWhere((item) => item.id == product.id);
     // TODO: delete local product first
-    _items.remove(product);
+    _userItems.remove(product);
     notifyListeners();
     final respond = await http.delete(url);
+    ScreenController.setFirstLoadingOnProductsOverviewScreen(true);
     // TODO: if getting error http request code 4xx, return product to local
     if (respond.statusCode >= 400) {
-      _items.insert(existingProductIndex, product);
+      _userItems.insert(existingProductIndex, product);
       notifyListeners();
       throw HttpException(message: 'Could not delete product');
     }

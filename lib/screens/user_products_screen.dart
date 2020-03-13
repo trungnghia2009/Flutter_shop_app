@@ -5,10 +5,16 @@ import '../providers/products.dart';
 import '../widgets/user_product_item.dart';
 import 'add_product_screen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/screen_controller.dart';
 
-class UserProductsScreen extends StatelessWidget {
+class UserProductsScreen extends StatefulWidget {
   static const String routeName = 'user_products_screen';
 
+  @override
+  _UserProductsScreenState createState() => _UserProductsScreenState();
+}
+
+class _UserProductsScreenState extends State<UserProductsScreen> {
   Future<bool> _onWillPop(BuildContext context) {
     print('action...');
     return showDialog(
@@ -40,9 +46,29 @@ class UserProductsScreen extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (ScreenController.firstLoadingOnUserProductsScreen) {
+      setState(() {
+        print('state1 .....');
+        ScreenController.setUserProductsScreenLoading(true);
+      });
+      Provider.of<Products>(context, listen: false)
+          .fetchAndSetProducts(true)
+          .then((_) {
+        print('state2 .....');
+        setState(() {
+          ScreenController.setUserProductsScreenLoading(false);
+          ScreenController.setFirstLoadingOnUserProductsScreen(false);
+        });
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
 //    final productsData = Provider.of<Products>(context);
-    print('rebuilding .....');
+    print('UserProductsScreen() rebuilding .....');
     return WillPopScope(
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
@@ -59,32 +85,25 @@ class UserProductsScreen extends StatelessWidget {
         drawer: AppDrawer(),
         // TODO: show list of Products
         // TODO: add refresh indicator
-        body: FutureBuilder(
-          future: _refreshProducts(context),
-          builder: (ctx, snapshot) => snapshot.connectionState ==
-                  ConnectionState.waiting
-              ? SpinKitFadingCircle(
-                  color: Theme.of(context).primaryColor,
-                )
-              : RefreshIndicator(
-                  onRefresh: () => _refreshProducts(context),
-                  child: Consumer<Products>(
-                    builder: (ctx, productsData, child) => Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: ListView.builder(
-                        itemCount: productsData.items.length,
-                        itemBuilder: (_, index) => ChangeNotifierProvider.value(
-                          value: productsData.items[index],
-                          child: UserProductItem(
-                            productIndex: index,
-                            product: productsData.items[index],
-                          ),
-                        ),
+        body: ScreenController.userProductsScreenLoading
+            ? SpinKitFadingCircle(
+                color: Theme.of(context).primaryColor,
+              )
+            : RefreshIndicator(
+                onRefresh: () => _refreshProducts(context),
+                child: Consumer<Products>(
+                  builder: (ctx, userProductsData, child) => Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ListView.builder(
+                      itemCount: userProductsData.userItems.length,
+                      itemBuilder: (_, index) => UserProductItem(
+                        productIndex: index,
+                        product: userProductsData.userItems[index],
                       ),
                     ),
                   ),
                 ),
-        ),
+              ),
       ),
     );
   }

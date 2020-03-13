@@ -19,6 +19,7 @@ import 'screens/splash_screen.dart';
 import 'screens/user_detail_screen.dart';
 import 'providers/avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/screen_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

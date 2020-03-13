@@ -3,8 +3,10 @@ import '../providers/products.dart';
 import '../providers/product.dart';
 import 'package:provider/provider.dart';
 import '../models/product_adding.dart';
-import '../providers/cart.dart' show Cart;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/screen_controller.dart';
+import '../screens/user_products_screen.dart';
+import '../screens/products_overview_screen.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const String routeName = 'edit_product_screen';
@@ -26,6 +28,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void dispose() {
     super.dispose();
+
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
     _imageUrlController.dispose();
@@ -45,7 +48,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.didChangeDependencies();
     final index = ModalRoute.of(context).settings.arguments as int;
     final products = Provider.of<Products>(context);
-    final product = products.items[index];
+    final product = products.userItems[index];
     _imageUrlController.text = product.imageUrl;
   }
 
@@ -62,7 +65,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     final productIndex = ModalRoute.of(context).settings.arguments as int;
     final products = Provider.of<Products>(context);
-    final product = products.items[productIndex];
+    final product = products.userItems[productIndex];
 
     void _saveFormForEditing() {
       final validate = _form.currentState.validate();
@@ -108,7 +111,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
           setState(() {
             _isLoading = false;
           });
-          Navigator.pop(context);
+          print('Navigate to UserProductsScreen');
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              UserProductsScreen.routeName, (Route<dynamic> route) => false);
         }
       }
     }
@@ -150,8 +155,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             FlatButton(
                               child: Text("Ok"),
                               onPressed: () {
-                                Navigator.of(context).pop();
-                                _updateItem();
+                                Navigator.pop(context);
+                                _updateItem().then(
+                                  (_) {
+                                    ScreenController
+                                        .setFirstLoadingOnProductsOverviewScreen(
+                                            true);
+                                    ScreenController
+                                        .setFirstLoadingOnUserProductsScreen(
+                                            true);
+                                  },
+                                );
                               },
                             ),
                           ],

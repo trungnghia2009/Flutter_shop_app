@@ -3,6 +3,8 @@ import '../providers/products.dart';
 import 'package:provider/provider.dart';
 import '../models/product_adding.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../providers/screen_controller.dart';
+import '../screens/user_products_screen.dart';
 
 class AddProductScreen extends StatefulWidget {
   static const String routeName = 'add_product_screen';
@@ -87,7 +89,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
           setState(() {
             _isLoading = false;
           });
-          Navigator.pop(context);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              UserProductsScreen.routeName, (Route<dynamic> route) => false);
         }
       }
     }
@@ -130,7 +133,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               child: Text("Ok"),
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                _addProduct();
+                                _addProduct().then((_) {
+                                  ScreenController
+                                      .setFirstLoadingOnProductsOverviewScreen(
+                                          true);
+                                  ScreenController
+                                      .setFirstLoadingOnUserProductsScreen(
+                                          true);
+                                });
                               },
                             ),
                           ],

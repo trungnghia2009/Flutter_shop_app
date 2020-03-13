@@ -7,8 +7,8 @@ import 'cart_screen.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/products.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../providers/theme_type.dart';
 import '../providers/avatar.dart';
+import '../providers/screen_controller.dart';
 
 enum FilterOptions {
   Favorites,
@@ -51,31 +51,29 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         false;
   }
 
-  bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isLoading = true;
-    });
-    Provider.of<Products>(context, listen: false)
-        .fetchAndSetProducts()
-        .then((_) {
-      Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
-    }).then((_) {
+
+    if (ScreenController.firstLoadingOnProductsOverviewScreen) {
       setState(() {
-        _isLoading = false;
+        ScreenController.setProductsOverviewScreenLoading(true);
       });
-    });
+      Provider.of<Products>(context, listen: false)
+          .fetchAndSetProducts()
+          .then((_) {
+        Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
+      }).then((_) {
+        setState(() {
+          ScreenController.setProductsOverviewScreenLoading(false);
+          ScreenController.setFirstLoadingOnProductsOverviewScreen(false);
+        });
+      });
+    }
   }
 
   Future<void> _refreshProducts() async {
     await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
-  }
-
-  void _showDrawer(BuildContext context) {
-    _scaffoldKey.currentState.openEndDrawer();
   }
 
   @override
@@ -129,7 +127,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 })
           ],
         ),
-        body: _isLoading
+        body: ScreenController.productsOverviewScreenLoading
             ? SpinKitFadingCircle(
                 color: Theme.of(context).primaryColor,
               )
