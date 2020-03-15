@@ -4,7 +4,7 @@ import '../providers/product.dart';
 import '../providers/products.dart';
 import '../screens/edit_product_screen.dart';
 import '../screens/product_detail_screen.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
 
 class UserProductItem extends StatelessWidget {
   final int productIndex;

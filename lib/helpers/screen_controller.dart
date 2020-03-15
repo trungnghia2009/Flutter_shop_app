@@ -64,4 +64,20 @@ class ScreenController {
   }
 
 // ------------------------------------------------------------
+
+  static void allowAllFirstLoading() {
+    _firstLoadingProductOverviewScreen = true;
+    _firstLoadingUserProductsScreen = true;
+    _firstLoadingOrderScreen = true;
+  }
+
+  static var _activateRefreshButton = false;
+
+  static bool get activateRefreshButton {
+    return _activateRefreshButton;
+  }
+
+  static setRefreshButton(bool value) {
+    _activateRefreshButton = value;
+  }
 }

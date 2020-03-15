@@ -4,7 +4,7 @@ import '../providers/orders.dart' show Orders;
 import '../widgets/order_item.dart';
 import '../widgets/app_drawer.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const String routeName = 'orders_screen';

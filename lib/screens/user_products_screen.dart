@@ -5,7 +5,7 @@ import '../providers/products.dart';
 import '../widgets/user_product_item.dart';
 import 'add_product_screen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
 
 class UserProductsScreen extends StatefulWidget {
   static const String routeName = 'user_products_screen';
@@ -94,13 +94,20 @@ class _UserProductsScreenState extends State<UserProductsScreen> {
                 child: Consumer<Products>(
                   builder: (ctx, userProductsData, child) => Padding(
                     padding: const EdgeInsets.all(8),
-                    child: ListView.builder(
-                      itemCount: userProductsData.userItems.length,
-                      itemBuilder: (_, index) => UserProductItem(
-                        productIndex: index,
-                        product: userProductsData.userItems[index],
-                      ),
-                    ),
+                    child: userProductsData.userItems.length == 0
+                        ? Center(
+                            child: Text(
+                              'You have no product',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: userProductsData.userItems.length,
+                            itemBuilder: (_, index) => UserProductItem(
+                              productIndex: index,
+                              product: userProductsData.userItems[index],
+                            ),
+                          ),
                   ),
                 ),
               ),

@@ -5,7 +5,8 @@ import 'product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/http_exception.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
 
 class Products with ChangeNotifier {
   String _authToken;
@@ -18,6 +19,7 @@ class Products with ChangeNotifier {
 
   List<Product> _items = [];
   List<Product> _userItems = [];
+  List<Product> _fullSearchList;
 
   List<Product> get items {
     return [..._items];
@@ -25,6 +27,10 @@ class Products with ChangeNotifier {
 
   List<Product> get userItems {
     return [..._userItems];
+  }
+
+  List<Product> get fullSearchList {
+    return _fullSearchList;
   }
 
   List<Product> get favoriteItems {
@@ -74,6 +80,7 @@ class Products with ChangeNotifier {
 
       notifyListeners();
     } catch (error) {
+      print(error);
       throw error;
     }
   }
@@ -102,7 +109,6 @@ class Products with ChangeNotifier {
       );
       _items.insert(0, newProduct); // add to the beginning
     } catch (error) {
-      print(error);
       throw error;
     }
 
@@ -169,5 +175,29 @@ class Products with ChangeNotifier {
   bool getFavoriteById(String id) {
     Product product = _items.firstWhere((item) => item.id == id);
     return product.isFavorite;
+  }
+
+  int _searchCount = 0;
+  void selectProductByTitle(String title) {
+    title = title.toLowerCase();
+    if (_searchCount == 0) {
+      _fullSearchList = _items;
+    } else {
+      _items = _fullSearchList;
+    }
+
+    List<Product> temp = [];
+    for (var i = 0; i < _items.length; i++) {
+      if (_items[i].title.toLowerCase().contains(title)) {
+        temp.add(_items[i]);
+      }
+    }
+    _items = temp;
+    _searchCount++;
+    notifyListeners();
+  }
+
+  void returnFullProduct() {
+    _items = _fullSearchList;
   }
 }

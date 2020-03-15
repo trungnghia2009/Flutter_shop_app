@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/http_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../helpers/screen_controller.dart';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -104,7 +105,7 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, 'update');
   }
 
-  Future<bool> tryAutoLogin() async {
+  Future<void> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       return false;
@@ -145,6 +146,7 @@ class Auth with ChangeNotifier {
       prefs.setInt('themeValue', 0);
     }
     prefs.remove('userData');
+    ScreenController.allowAllFirstLoading();
   }
 
   void _autoLogout() {

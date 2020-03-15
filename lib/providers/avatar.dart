@@ -49,8 +49,8 @@ class Avatar with ChangeNotifier {
     File compressedFile = await FlutterNativeImage.compressImage(
         _imageFile.path,
         quality: 80,
-        targetWidth: 300,
-        targetHeight: (properties.height * 300 / properties.width).round());
+        targetWidth: 500,
+        targetHeight: (properties.height * 500 / properties.width).round());
 
     // TODO: upload image
     final StorageReference storageReference =
@@ -64,6 +64,8 @@ class Avatar with ChangeNotifier {
 
     final url =
         'https://flutter-shop-app-b7959.firebaseio.com/avatar/$_userId.json?auth=$_authToken';
+
+    // TODO: update avatar to database
     final respond = await http.put(url, body: json.encode(downloadUrl));
     _imageFile = compressedFile;
     _avatarUrl = downloadUrl;

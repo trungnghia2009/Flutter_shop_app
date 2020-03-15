@@ -19,7 +19,8 @@ import 'screens/splash_screen.dart';
 import 'screens/user_detail_screen.dart';
 import 'providers/avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'providers/screen_controller.dart';
+import 'helpers/connectivity_service.dart';
+import 'enums/connectivity_status.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,14 +28,20 @@ void main() {
     var themeType = prefs.getInt('themeValue') ?? 0;
     runApp(
       MultiProvider(
+        // TODO: add StreamProvider
         providers: [
+          StreamProvider<ConnectivityStatus>(
+            create: (ctx) =>
+                ConnectivityService().connectionStatusController.stream,
+          ),
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
           ChangeNotifierProvider(
             create: (ctx) => Auth(),
           ),
-          ChangeNotifierProvider<ThemeTypes>(
+          // TODO: theme...
+          ChangeNotifierProvider(
             create: (ctx) => ThemeTypes(themeType),
           ),
           ChangeNotifierProxyProvider<Auth, Avatar>(

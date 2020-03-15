@@ -3,7 +3,7 @@ import '../providers/products.dart';
 import 'package:provider/provider.dart';
 import '../models/product_adding.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
 import '../screens/user_products_screen.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -89,6 +89,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           setState(() {
             _isLoading = false;
           });
+          // TODO: Navigate to UserProductsScreen and then remove all route memory
           Navigator.of(context).pushNamedAndRemoveUntil(
               UserProductsScreen.routeName, (Route<dynamic> route) => false);
         }

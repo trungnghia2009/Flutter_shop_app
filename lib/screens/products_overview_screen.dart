@@ -8,7 +8,10 @@ import '../widgets/app_drawer.dart';
 import '../providers/products.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../providers/avatar.dart';
-import '../providers/screen_controller.dart';
+import '../helpers/screen_controller.dart';
+import '../enums/connectivity_status.dart';
+import '../widgets/offline_signIn_widget.dart';
+import '../widgets/refresh_button.dart';
 
 enum FilterOptions {
   Favorites,
@@ -24,7 +27,10 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isFavoritesOnly = false;
+  var _isSearch = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   Future<bool> _onWillPop() {
     print('action...');
@@ -54,9 +60,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void initState() {
     super.initState();
-
     if (ScreenController.firstLoadingOnProductsOverviewScreen) {
       setState(() {
+        print('in setState().................................');
         ScreenController.setProductsOverviewScreenLoading(true);
       });
       Provider.of<Products>(context, listen: false)
@@ -74,17 +80,53 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   Future<void> _refreshProducts() async {
     await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    await Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
+  }
+
+  bool _tricky() {
+    setState(() {
+      return true;
+    });
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final productsData = Provider.of<Products>(context);
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text('MyShop'),
+          title: _isSearch
+              ? TextField(
+                  autofocus: true,
+                  onChanged: (title) {
+                    setState(() {
+                      productsData.selectProductByTitle(title);
+                    });
+                  },
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Enter product title",
+                    hintStyle: TextStyle(color: Colors.white70),
+                  ),
+                )
+              : Text('MyShop'),
           actions: <Widget>[
+            IconButton(
+                icon: !_isSearch ? Icon(Icons.search) : Icon(Icons.cancel),
+                onPressed: () {
+                  setState(() {
+                    _isSearch = !_isSearch;
+                    if (productsData.fullSearchList != null)
+                      productsData.returnFullProduct();
+                  });
+                }),
             PopupMenuButton(
               itemBuilder: (_) => [
                 PopupMenuItem(
@@ -120,24 +162,35 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 },
               ),
             ),
-            IconButton(
-                icon: Icon(Icons.map),
-                onPressed: () {
-                  _scaffoldKey.currentState.openDrawer();
-                })
           ],
         ),
-        body: ScreenController.productsOverviewScreenLoading
-            ? SpinKitFadingCircle(
-                color: Theme.of(context).primaryColor,
-              )
-            // TODO: add refresh indicator
-            : RefreshIndicator(
-                onRefresh: _refreshProducts,
-                child: ProductsGrip(
-                  showFav: _isFavoritesOnly,
-                )),
-        drawer: AppDrawer(),
+
+        // TODO: add checking connection
+        body: (Provider.of<ConnectivityStatus>(context) ==
+                ConnectivityStatus.Offline)
+            ? OfflineSignInWidget()
+            : (ScreenController.productsOverviewScreenLoading
+                ? SpinKitFadingCircle(
+                    color: Theme.of(context).primaryColor,
+                  )
+                // TODO: add refresh indicator
+                : (!ScreenController.activateRefreshButton
+                    ? RefreshIndicator(
+                        onRefresh: _refreshProducts,
+                        child: ProductsGrip(
+                          showFav: _isFavoritesOnly,
+                        ))
+                    : RefreshButton(
+                        onPressed: () async {
+                          await Provider.of<Products>(context, listen: false)
+                              .fetchAndSetProducts();
+                          await Provider.of<Avatar>(context, listen: false)
+                              .fetchAvatarUrl();
+                          ScreenController.setRefreshButton(false);
+                          setState(() {});
+                        },
+                      ))),
+        drawer: _isSearch ? null : AppDrawer(),
       ),
     );
   }

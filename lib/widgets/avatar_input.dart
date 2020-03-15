@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../helpers/path.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/avatar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'dart:io';
 
 class AvatarInput extends StatefulWidget {
   @override
@@ -13,12 +12,6 @@ class AvatarInput extends StatefulWidget {
 
 class _AvatarInputState extends State<AvatarInput> {
   var _isLoading = false;
-
-//  @override
-//  void initState() {
-//    super.initState();
-//    Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
-//  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +35,31 @@ class _AvatarInputState extends State<AvatarInput> {
               child: Stack(
                 children: <Widget>[
                   Consumer<Avatar>(
-                    builder: (ctx, avatar, child) => SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: (avatar.imageFile == null &&
-                              avatar.avatarUrl == null)
-                          ? Image.asset(Path.avatarImageDefault)
-                          : ((avatar.imageFile != null)
-                              ? Image.file(avatar.imageFile, fit: BoxFit.cover)
-                              : Image.network(
-                                  avatar.avatarUrl,
-                                  fit: BoxFit.cover,
-                                )),
+                    builder: (ctx, avatar, child) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (ctx) => DetailAvatar(
+                                  imageUrl: avatar.avatarUrl,
+                                  imageFile: avatar.imageFile,
+                                )));
+                      },
+                      child: Hero(
+                        tag: 'avatarImage',
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: (avatar.imageFile == null &&
+                                  avatar.avatarUrl == null)
+                              ? Image.asset(Path.avatarImageDefault)
+                              : ((avatar.imageFile != null)
+                                  ? Image.file(avatar.imageFile,
+                                      fit: BoxFit.cover)
+                                  : Image.network(
+                                      avatar.avatarUrl,
+                                      fit: BoxFit.cover,
+                                    )),
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -110,6 +116,34 @@ class _AvatarInputState extends State<AvatarInput> {
                   )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DetailAvatar extends StatelessWidget {
+  final String imageUrl;
+  final File imageFile;
+  DetailAvatar({this.imageUrl, this.imageFile});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GestureDetector(
+        child: Center(
+          child: Hero(
+            tag: 'avatarImage',
+            child: imageUrl == null
+                ? Image.asset(Path.avatarImageDefault)
+                : (imageFile != null
+                    ? Image.file(imageFile)
+                    : Image.network(
+                        imageUrl,
+                      )),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
       ),
     );
   }

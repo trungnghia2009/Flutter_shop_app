@@ -129,7 +129,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         style: Theme.of(context).textTheme.title,
                       ),
                       Text(
-                        'Last login: ${DateFormat('MMM d, yyyy - hh:mm:ss').format(authData.loginDate)}',
+                        'Last login: ${DateFormat('MMM d, yyyy').format(authData.loginDate)}',
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.grey,

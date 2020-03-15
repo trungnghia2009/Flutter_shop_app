@@ -47,11 +47,22 @@ class ProductDetailScreen extends StatelessWidget {
                 Container(
                   height: 300,
                   width: double.infinity,
-                  child: Hero(
-                    tag: product.id,
-                    child: Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => ImageDetail(
+                                    imageUrl: product.imageUrl,
+                                    tag: product.id,
+                                  )));
+                    },
+                    child: Hero(
+                      tag: product.id,
+                      child: Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -149,6 +160,28 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ImageDetail extends StatelessWidget {
+  final String tag;
+  final String imageUrl;
+  ImageDetail({this.tag, this.imageUrl});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: GestureDetector(
+          child: Hero(
+            tag: tag,
+            child: Image.network(imageUrl),
+          ),
+          onTap: () {
+            Navigator.of(context).pop();
+          },
         ),
       ),
     );

@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:shop_app_flutter/widgets/round_icon_button.dart';
 import '../screens/products_overview_screen.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products_screen.dart';
@@ -29,7 +32,7 @@ class AppDrawer extends StatelessWidget {
                     backgroundImage: avatar.avatarUrl == null
                         ? AssetImage(Path.avatarImageDefault)
                         : NetworkImage(avatar.avatarUrl),
-                    minRadius: 25,
+                    minRadius: 28,
                   ),
                   onTap: () {
                     Navigator.of(context)
@@ -92,7 +95,7 @@ class AppDrawer extends StatelessWidget {
                     FlatButton(
                         onPressed: () {
                           Navigator.of(context).pop();
-                          // TODO: push to homePage
+                          // TODO: push to homePage, remove all
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               '/', (Route<dynamic> route) => false);
                           Provider.of<Auth>(context, listen: false).logout();
