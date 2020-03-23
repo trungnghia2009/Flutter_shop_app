@@ -1,6 +1,5 @@
 # shop_app_flutter
-
-A new Flutter application.
+APK file for android: https://drive.google.com/file/d/1d2ExeedMrf_4z5NJ9d2LnjIvD44MjkrY/view
 
 ## Getting Started
 
