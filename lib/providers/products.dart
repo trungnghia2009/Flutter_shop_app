@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/http_exception.dart';
 import '../helpers/screen_controller.dart';
-import '../helpers/screen_controller.dart';
+import 'dart:async';
 
 class Products with ChangeNotifier {
   String _authToken;
@@ -199,5 +199,17 @@ class Products with ChangeNotifier {
 
   void returnFullProduct() {
     _items = _fullSearchList;
+  }
+
+  bool isStream = true;
+  Stream refreshPageAfterCertainTime(int second) async* {
+    if (isStream) {
+      print('streaming.....................................');
+      while (true) {
+        await Future.delayed(Duration(seconds: second));
+        await fetchAndSetProducts();
+        isStream = false;
+      }
+    }
   }
 }

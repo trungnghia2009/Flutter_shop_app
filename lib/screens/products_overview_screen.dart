@@ -29,8 +29,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isFavoritesOnly = false;
   var _isSearch = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
 
   Future<bool> _onWillPop() {
     print('action...');
@@ -60,6 +58,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void initState() {
     super.initState();
+
+    // TODO: Controller page loading
     if (ScreenController.firstLoadingOnProductsOverviewScreen) {
       setState(() {
         print('in setState().................................');
@@ -83,15 +83,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     await Provider.of<Avatar>(context, listen: false).fetchAvatarUrl();
   }
 
-  bool _tricky() {
-    setState(() {
-      return true;
-    });
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
+    print('ProductsOverviewScreen() build');
     final productsData = Provider.of<Products>(context);
     return WillPopScope(
       onWillPop: _onWillPop,
