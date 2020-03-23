@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../providers/auth.dart';
 import 'package:provider/provider.dart';
-import '../models/http_exception.dart';
+import '../helpers/http_exception.dart';
 import '../enums/connectivity_status.dart';
 import '../widgets/offline_auth_widget.dart';
 
@@ -53,7 +53,6 @@ class AuthScreen extends StatelessWidget {
                               // TODO: understand .. key
                               transform: Matrix4.rotationZ(-8 * pi / 180)
                                 ..translate(-10.0),
-                              // ..translate(-10.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: Colors.deepOrange.shade900,
@@ -138,10 +137,6 @@ class _AuthCardState extends State<AuthCard>
       parent: _animationController,
       curve: Curves.easeIn,
     ));
-
-//    _heightAnimation.addListener(() {
-//      setState(() {});
-//    });
   }
 
   @override

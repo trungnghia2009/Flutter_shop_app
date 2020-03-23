@@ -71,13 +71,13 @@ class ScreenController {
     _firstLoadingOrderScreen = true;
   }
 
-  static var _activateRefreshButton = false;
+  static var _autoRefresh = false;
 
-  static bool get activateRefreshButton {
-    return _activateRefreshButton;
+  static bool get autoRefresh {
+    return _autoRefresh;
   }
 
-  static setRefreshButton(bool value) {
-    _activateRefreshButton = value;
+  static setAutoRefresh(bool value) {
+    _autoRefresh = value;
   }
 }

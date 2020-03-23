@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import '../enums/connectivity_status.dart';
-import '../providers/products.dart';
 
 class ConnectivityService with ChangeNotifier {
   // Create our public controller
@@ -10,10 +9,8 @@ class ConnectivityService with ChangeNotifier {
       StreamController<ConnectivityStatus>();
 
   ConnectivityService() {
-    // Subscribe to the connectivity Changed Steam
+    // Subscribe to the connectivity Changed Stream
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      // Use Connectivity() here to gather more info if you need t
-
       connectionStatusController.add(_getStatusFromResult(result));
     });
   }

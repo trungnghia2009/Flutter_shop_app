@@ -4,7 +4,7 @@ import '../models/product_adding.dart';
 import 'product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/http_exception.dart';
+import '../helpers/http_exception.dart';
 import '../helpers/screen_controller.dart';
 import 'dart:async';
 
@@ -194,7 +194,6 @@ class Products with ChangeNotifier {
     }
     _items = temp;
     _searchCount++;
-    notifyListeners();
   }
 
   void returnFullProduct() {

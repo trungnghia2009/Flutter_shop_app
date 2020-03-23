@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-enum ThemeSet {
-  purpleTheme,
-  pinkTheme,
-  blueTheme,
-  darkTheme,
-}
 
 class ThemeDefinition {
   final Color primarySwatch;

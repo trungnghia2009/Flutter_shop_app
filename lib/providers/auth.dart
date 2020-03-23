@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/http_exception.dart';
+import '../helpers/http_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/screen_controller.dart';
 
@@ -45,7 +45,7 @@ class Auth with ChangeNotifier {
     final url =
         'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCg9qng5l5x6zQjXueX4LG6bV_0btCOhPM';
     try {
-      final respond = urlSegment == 'update'
+      final response = urlSegment == 'update'
           ? await http.post(url,
               body: json.encode({
                 'idToken': _token,
@@ -58,20 +58,20 @@ class Auth with ChangeNotifier {
                 'password': password,
                 'returnSecureToken': true,
               }));
-      final respondData = json.decode(respond.body);
-      if (respondData['error'] != null) {
-        throw HttpException(message: respondData['error']['message']);
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(message: responseData['error']['message']);
       }
-      _token = respondData['idToken'];
-      _userId = respondData['localId'];
-      _email = respondData['email'];
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _email = responseData['email'];
       _expiryDate = DateTime.now().add(
         Duration(
-          seconds: int.parse(respondData['expiresIn']),
+          seconds: int.parse(responseData['expiresIn']),
         ),
       );
       print(
-          'Token: $_token\nemail: $_email\nUserId: $_userId\nExpiresIn: ${respondData['expiresIn'].toString()}');
+          'Token: $_token\nemail: $_email\nUserId: $_userId\nExpiresIn: ${responseData['expiresIn'].toString()}');
       _autoLogout();
       notifyListeners();
       // TODO: add shared preferences for storing login data
@@ -86,7 +86,9 @@ class Auth with ChangeNotifier {
       _loginDate = DateTime.now();
       print('Hey-----------------------------');
       print('Token: $_token\n'
-          'email: $_email\nUserId: $_userId\nExpiresIn: ${respondData['expiresIn'].toString()}');
+          'email: $_email\nUserId: $_userId\nExpiresIn: ${[
+        'expiseesIn'
+      ].toString()}');
     } catch (error) {
       // TODO: if not internet connection
       throw error;

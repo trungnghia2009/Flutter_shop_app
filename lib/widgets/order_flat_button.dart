@@ -32,7 +32,7 @@ class _OrderFlatButtonState extends State<OrderFlatButton> {
                         // return object of type Dialog
                         return AlertDialog(
                           title: Text("Make an order ?"),
-                          content: Text("This will lead you to order page."),
+                          content: Text("This will add products to orders."),
                           actions: <Widget>[
                             // usually buttons at the bottom of the dialog
                             FlatButton(
@@ -73,7 +73,7 @@ class _OrderFlatButtonState extends State<OrderFlatButton> {
                       builder: (BuildContext context) {
                         // return object of type Dialog
                         return AlertDialog(
-                          title: new Text("There is no item in cart!"),
+                          title: new Text("Please add the item to your cart !"),
                           actions: <Widget>[
                             // usually buttons at the bottom of the dialog
                             new FlatButton(

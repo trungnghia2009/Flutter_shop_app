@@ -28,7 +28,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isFavoritesOnly = false;
   var _isSearch = false;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<bool> _onWillPop() {
     print('action...');
@@ -86,11 +85,10 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     print('ProductsOverviewScreen() build');
-    final productsData = Provider.of<Products>(context);
+    final productsData = Provider.of<Products>(context, listen: false);
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        key: _scaffoldKey,
         appBar: AppBar(
           title: _isSearch
               ? TextField(
@@ -110,7 +108,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                     hintStyle: TextStyle(color: Colors.white70),
                   ),
                 )
-              : Text('MyShop'),
+              : Text('G-Shop'),
           actions: <Widget>[
             IconButton(
                 icon: !_isSearch ? Icon(Icons.search) : Icon(Icons.cancel),
@@ -121,6 +119,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                       productsData.returnFullProduct();
                   });
                 }),
+
             PopupMenuButton(
               itemBuilder: (_) => [
                 PopupMenuItem(
@@ -167,21 +166,27 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 ? SpinKitFadingCircle(
                     color: Theme.of(context).primaryColor,
                   )
-                // TODO: add refresh indicator
-                : (!ScreenController.activateRefreshButton
+                // TODO: add auto refresh indicator
+                : (!ScreenController.autoRefresh
                     ? RefreshIndicator(
                         onRefresh: _refreshProducts,
                         child: ProductsGrip(
                           showFav: _isFavoritesOnly,
                         ))
-                    : RefreshButton(
-                        onPressed: () async {
-                          await Provider.of<Products>(context, listen: false)
-                              .fetchAndSetProducts();
-                          await Provider.of<Avatar>(context, listen: false)
-                              .fetchAvatarUrl();
-                          ScreenController.setRefreshButton(false);
-                          setState(() {});
+                    : FutureBuilder(
+                        future: _refreshProducts(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return SpinKitFadingCircle(
+                              color: Theme.of(context).primaryColor,
+                            );
+                          } else {
+                            ScreenController.setAutoRefresh(false);
+                            return ProductsGrip(
+                              showFav: _isFavoritesOnly,
+                            );
+                          }
                         },
                       ))),
         drawer: _isSearch ? null : AppDrawer(),

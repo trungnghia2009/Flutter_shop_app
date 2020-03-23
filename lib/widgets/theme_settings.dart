@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../providers/theme_type.dart';
-import '../models/shared_preferences.dart';
 
 class ThemeSettings extends StatelessWidget {
   const ThemeSettings({

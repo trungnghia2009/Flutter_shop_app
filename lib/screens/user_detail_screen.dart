@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
-import '../models/http_exception.dart';
+import '../helpers/http_exception.dart';
 import 'package:intl/intl.dart';
 import '../widgets/avatar_input.dart';
 
